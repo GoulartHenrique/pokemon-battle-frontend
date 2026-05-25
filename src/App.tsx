@@ -7,6 +7,7 @@ import Battle from "./pages/Battle";
 import Leaderboard from "./pages/Leaderboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -16,8 +17,22 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/pokemon/:id" element={<PokemonDetail />} />
-            <Route path="/battle" element={<Battle />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route
+              path="/battle"
+              element={
+                <ProtectedRoute>
+                  <Battle />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
