@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import PokemonDetail from "./pages/PokemonDetail";
@@ -10,16 +11,18 @@ import Register from "./pages/Register";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/pokemon/:id" element={<PokemonDetail />} />
-          <Route path="/battle" element={<Battle />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/pokemon/:id" element={<PokemonDetail />} />
+            <Route path="/battle" element={<Battle />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

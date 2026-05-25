@@ -1,6 +1,9 @@
 import { NavLink, Outlet } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Layout() {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
     <div className="min-h-screen">
       <nav className="navbar bg-base-200 shadow-md px-4">
@@ -19,9 +22,16 @@ export default function Layout() {
           <NavLink to="/leaderboard" className="btn btn-ghost btn-sm">
             Leaderboard
           </NavLink>
-          <NavLink to="/login" className="btn btn-primary btn-sm">
-            Login
-          </NavLink>
+
+          {isAuthenticated ? (
+            <button onClick={logout} className="btn btn-error btn-sm">
+              Logout
+            </button>
+          ) : (
+            <NavLink to="/login" className="btn btn-primary btn-sm">
+              Login
+            </NavLink>
+          )}
         </div>
       </nav>
       <main className="container mx-auto p-4">
