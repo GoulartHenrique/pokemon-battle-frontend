@@ -28,6 +28,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadPokemons = async () => {
@@ -35,7 +36,7 @@ export default function Home() {
         const data = await fetchPokemonListWithDetails();
         setPokemons(data);
       } catch (error) {
-        console.error("Failed to fetch pokemons:", error);
+        setError("Failed to load Pokémon. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -64,6 +65,19 @@ export default function Home() {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <p className="text-xl text-error">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="btn btn-primary"
+        >
+          Try Again
+        </button>
       </div>
     );
   }

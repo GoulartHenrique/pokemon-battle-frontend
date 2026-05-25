@@ -7,6 +7,7 @@ export default function PokemonDetail() {
   const { id } = useParams();
   const [pokemon, setPokemon] = useState<PokemonDetailType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadPokemon = async () => {
@@ -14,7 +15,7 @@ export default function PokemonDetail() {
         const data = await fetchPokemonDetail(id!);
         setPokemon(data);
       } catch (error) {
-        console.error("Failed to fetch pokemon:", error);
+        setError("Failed to load Pokémon details.");
       } finally {
         setLoading(false);
       }
@@ -33,6 +34,16 @@ export default function PokemonDetail() {
 
   if (!pokemon) {
     return <p className="text-center mt-10">Pokémon not found</p>;
+  }
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <p className="text-xl text-error">{error}</p>
+        <Link to="/" className="btn btn-primary">
+          Back to Pokédex
+        </Link>
+      </div>
+    );
   }
   return (
     <div className="max-w-2xl mx-auto">
