@@ -105,7 +105,10 @@ export default function PokemonDetail() {
             </div>
           </div>
 
-          <Link to="/battle" className="btn btn-primary mt-6">
+          <Link
+            to={`/battle?pokemon=${pokemon.id}`}
+            className="btn btn-primary mt-6"
+          >
             Choose for Battle ⚔️
           </Link>
         </div>
