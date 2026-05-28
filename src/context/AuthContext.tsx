@@ -11,34 +11,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const AUTH_URL = import.meta.env.VITE_AUTH_URL;
 
-  const register = async (email: string, password: string) => {
-    const response = await fetch(`${AUTH_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const register = async (name: string, email: string, password: string) => {
+    let response;
+    try {
+      response = await fetch(`${AUTH_URL}/api/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, email, password }),
+      });
+    } catch {
+      throw new Error("Could not connect to auth server");
+    }
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Registration failed");
+      try {
+        const error = await response.json();
+        throw new Error(error.message || "Registration failed");
+      } catch {
+        throw new Error("Registration failed");
+      }
     }
   };
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${AUTH_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    let response;
+    try {
+      response = await fetch(`${AUTH_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+    } catch {
+      throw new Error("Could not connect to auth server");
+    }
 
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Login failed");
     }
 
-    const data = await response.json();
-    localStorage.setItem("token", data.token);
-    setToken(data.token);
+    setToken("authenticated");
+    localStorage.setItem("token", "authenticated");
   };
 
   const logout = () => {

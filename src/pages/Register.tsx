@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,8 +21,13 @@ export default function Register() {
       return;
     }
 
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
     try {
-      await register(email, password);
+      await register(name, email, password);
       navigate("/login");
     } catch (err) {
       if (err instanceof Error) {
@@ -29,6 +35,7 @@ export default function Register() {
       }
     }
   };
+
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <div className="card w-96 bg-base-200 shadow-xl">
@@ -39,6 +46,14 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
             <input
+              type="text"
+              placeholder="Name"
+              className="input input-bordered w-full"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <input
               type="email"
               placeholder="Email"
               className="input input-bordered w-full"
@@ -48,7 +63,7 @@ export default function Register() {
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Password (min. 8 characters)"
               className="input input-bordered w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
