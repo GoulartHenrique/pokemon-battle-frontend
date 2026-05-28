@@ -7,7 +7,7 @@ export async function fetchPokemonListWithDetails(): Promise<PokemonDetail[]> {
   const data = await response.json();
 
   const details = await Promise.all(
-    data.results.map((pokemon: PokemonListItem, index: number) =>
+    data.results.map((_pokemon: PokemonListItem, index: number) =>
       fetch(`${BASE_URL}/pokemon/${index + 1}`).then((res) => res.json()),
     ),
   );
