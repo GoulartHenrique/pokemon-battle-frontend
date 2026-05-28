@@ -48,12 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Login failed");
+      try {
+        const error = await response.json();
+        throw new Error(error.message || "Login failed");
+      } catch {
+        throw new Error("Login failed");
+      }
     }
 
-    setToken("authenticated");
-    localStorage.setItem("token", "authenticated");
+    const data = await response.json();
+    localStorage.setItem("token", data.accessToken);
+    setToken(data.accessToken);
   };
 
   const logout = () => {
