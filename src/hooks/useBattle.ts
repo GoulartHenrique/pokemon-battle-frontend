@@ -1,11 +1,7 @@
 import { useState } from "react";
 import type { BattlePokemon, BattleLog, BattlePhase } from "../types/battle";
 import type { PokemonDetail } from "../types/pokemon";
-import {
-  calculateDamage,
-  getFirstAttacker,
-  prepareBattlePokemon,
-} from "../utils/battleCalc";
+import { calculateDamage, prepareBattlePokemon } from "../utils/battleCalc";
 
 export function useBattle() {
   const [player, setPlayer] = useState<BattlePokemon | null>(null);
@@ -27,46 +23,53 @@ export function useBattle() {
     setLogs([]);
     setWinner(null);
     setPhase("fighting");
-
-    const first = getFirstAttacker(
-      prepareBattlePokemon(playerDetail),
-      prepareBattlePokemon(enemyDetail),
-    );
-
-    addLog(`Battle started!`, "info");
-    addLog(
-      `${first === "player" ? playerDetail.name : enemyDetail.name} is faster and attacks first!`,
-      "info",
-    );
+    addLog("Battle started!", "info");
   };
 
   const playerAttack = () => {
     if (!player || !enemy || phase !== "fighting") return;
 
-    const damage = calculateDamage(player, enemy);
-    const newEnemyHp = Math.max(0, enemy.currentHp - damage);
+    const playerFirst = player.speed >= enemy.speed;
 
-    setEnemy({ ...enemy, currentHp: newEnemyHp });
-    addLog(
-      `${player.detail.name} attacks and deals ${damage} damage!`,
-      "player",
-    );
+    if (playerFirst) {
+      const damage = calculateDamage(player, enemy);
+      const newEnemyHp = Math.max(0, enemy.currentHp - damage);
+      setEnemy({ ...enemy, currentHp: newEnemyHp });
+      addLog(
+        `${player.detail.name} attacks and deals ${damage} damage!`,
+        "player",
+      );
 
-    if (newEnemyHp <= 0) {
-      addLog(`${enemy.detail.name} fainted! You win!`, "info");
-      setWinner("player");
-      setPhase("result");
-      return;
-    }
+      if (newEnemyHp <= 0) {
+        addLog(`${enemy.detail.name} fainted! You win!`, "info");
+        setWinner("player");
+        setPhase("result");
+        return;
+      }
 
-    // Enemy attacks back
-    setTimeout(() => {
+      setTimeout(() => {
+        const enemyDamage = calculateDamage(enemy, player);
+        const newPlayerHp = Math.max(0, player.currentHp - enemyDamage);
+        setPlayer((prev) =>
+          prev ? { ...prev, currentHp: newPlayerHp } : null,
+        );
+        addLog(
+          `${enemy.detail.name} attacks and deals ${enemyDamage} damage!`,
+          "enemy",
+        );
+
+        if (newPlayerHp <= 0) {
+          addLog(`${player.detail.name} fainted! You lose!`, "info");
+          setWinner("enemy");
+          setPhase("result");
+        }
+      }, 1000);
+    } else {
       const enemyDamage = calculateDamage(enemy, player);
       const newPlayerHp = Math.max(0, player.currentHp - enemyDamage);
-
       setPlayer((prev) => (prev ? { ...prev, currentHp: newPlayerHp } : null));
       addLog(
-        `${enemy.detail.name} attacks and deals ${enemyDamage} damage!`,
+        `${enemy.detail.name} is faster and attacks first, dealing ${enemyDamage} damage!`,
         "enemy",
       );
 
@@ -74,8 +77,25 @@ export function useBattle() {
         addLog(`${player.detail.name} fainted! You lose!`, "info");
         setWinner("enemy");
         setPhase("result");
+        return;
       }
-    }, 1000);
+
+      setTimeout(() => {
+        const damage = calculateDamage(player, enemy);
+        const newEnemyHp = Math.max(0, enemy.currentHp - damage);
+        setEnemy((prev) => (prev ? { ...prev, currentHp: newEnemyHp } : null));
+        addLog(
+          `${player.detail.name} attacks and deals ${damage} damage!`,
+          "player",
+        );
+
+        if (newEnemyHp <= 0) {
+          addLog(`${enemy.detail.name} fainted! You win!`, "info");
+          setWinner("player");
+          setPhase("result");
+        }
+      }, 1000);
+    }
   };
 
   const resetBattle = () => {
