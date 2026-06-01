@@ -62,14 +62,14 @@ export default function Battle() {
 
   const sendBattleResult = async (won: boolean) => {
     try {
-      await fetch(`${import.meta.env.VITE_BACKEND_URL}/battle/result`, {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/leaderboard`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          scoreChange: won ? 50 : -20,
+          score: won ? 50 : -20,
           wins: won ? 1 : 0,
           losses: won ? 0 : 1,
         }),
