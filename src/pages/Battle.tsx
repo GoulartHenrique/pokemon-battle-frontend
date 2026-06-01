@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { useBattle } from "../hooks/useBattle";
+import { useAuth } from "../hooks/useAuth";
 import type { PokemonDetail } from "../types/pokemon";
 
 export default function Battle() {
@@ -17,6 +18,8 @@ export default function Battle() {
     resetBattle,
   } = useBattle();
   const [searchParams] = useSearchParams();
+  const { token } = useAuth();
+  const resultSent = useRef(false);
 
   useEffect(() => {
     const loadPokemons = async () => {
@@ -57,6 +60,25 @@ export default function Battle() {
     await handleSelectPokemon(randomId);
   };
 
+  const sendBattleResult = async (won: boolean) => {
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/battle/result`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          scoreChange: won ? 50 : -20,
+          wins: won ? 1 : 0,
+          losses: won ? 0 : 1,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save battle result:", error);
+    }
+  };
+
   // Auto-select pokemon from URL query
   useEffect(() => {
     const pokemonId = searchParams.get("pokemon");
@@ -64,6 +86,17 @@ export default function Battle() {
       handleSelectPokemon(Number(pokemonId));
     }
   }, [allPokemons]);
+
+  // Send battle result when battle ends
+  useEffect(() => {
+    if (phase === "result" && winner && !resultSent.current) {
+      resultSent.current = true;
+      sendBattleResult(winner === "player");
+    }
+    if (phase === "select") {
+      resultSent.current = false;
+    }
+  }, [phase, winner]);
 
   if (loading) {
     return (
