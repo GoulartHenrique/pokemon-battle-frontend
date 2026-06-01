@@ -69,7 +69,7 @@ export default function Battle() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          score: won ? 50 : -20,
+          score: won ? 50 : 0,
           wins: won ? 1 : 0,
           losses: won ? 0 : 1,
         }),
