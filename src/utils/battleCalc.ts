@@ -1,4 +1,5 @@
 import type { BattlePokemon } from "../types/battle";
+import type { PokemonDetail } from "../types/pokemon";
 
 export function calculateDamage(
   attacker: BattlePokemon,
@@ -17,15 +18,14 @@ export function getFirstAttacker(
   return player.speed >= enemy.speed ? "player" : "enemy";
 }
 
-export function prepareBattlePokemon(detail: any): BattlePokemon {
-  const hp =
-    detail.stats.find((s: any) => s.stat.name === "hp")?.base_stat || 100;
+export function prepareBattlePokemon(detail: PokemonDetail): BattlePokemon {
+  const hp = detail.stats.find((s) => s.stat.name === "hp")?.base_stat || 100;
   const attack =
-    detail.stats.find((s: any) => s.stat.name === "attack")?.base_stat || 50;
+    detail.stats.find((s) => s.stat.name === "attack")?.base_stat || 50;
   const defense =
-    detail.stats.find((s: any) => s.stat.name === "defense")?.base_stat || 50;
+    detail.stats.find((s) => s.stat.name === "defense")?.base_stat || 50;
   const speed =
-    detail.stats.find((s: any) => s.stat.name === "speed")?.base_stat || 50;
+    detail.stats.find((s) => s.stat.name === "speed")?.base_stat || 50;
 
   return {
     detail,

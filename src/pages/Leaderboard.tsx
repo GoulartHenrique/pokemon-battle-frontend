@@ -99,10 +99,6 @@ export default function Leaderboard() {
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
-        // TODO: replace with real fetch when backend is ready
-        // const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/leaderboard`);
-        // const data = await response.json();
-        // setEntries(data.data);
         setEntries(mockData);
       } catch (error) {
         console.error("Failed to fetch leaderboard:", error);
